@@ -1,0 +1,82 @@
+# Binary Tree Level Order Traversal
+
+LeetCode 102: https://leetcode.com/problems/binary-tree-level-order-traversal/
+
+## Thinking Process
+
+In order to traverse the binary tree by level, we need use queue to store nodes which are to be expanded. 
+we can expand all nodes at the same level and form one array per level. While expanding the parent nodes,  
+we need generate children nodes from parent nodes, and push them back into the queue. 
+But how do we determine when we reach to the end of each level?
+
+## Solutions
+
+### BFS with Per-level Queue
+
+we can enqueue all nodes of the same level into the same queue but use different queues for different levels. 
+We enqueue the root into the level 1 queue. When we dequeue the root we will enqueue its child nodes into level 2 queue. 
+When we dequeue nodes from level 2 queue, we will enqueue their child nodes into level 3 queue. 
+We can optimize this technique and only keep track of two queues — 
+one for the current level we are dequeueing through and one for the next level that we are enqueuing into.
+
+## Code
+
+### BFS with Per-level Queue
+
+```javascript
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[][]}
+ */
+const levelOrder = function(root) {
+    if (!root) {
+        return [];
+    }
+    
+    let thisLevel = [root];
+    let nextLevel = [];
+    const result = [[root.val]];
+    while (thisLevel.length > 0) {
+        const node = thisLevel.shift(); // dequeue
+        if (node.left) {
+            nextLevel.push(node.left);
+        }
+        if (node.right) {
+            nextLevel.push(node.right);
+        }
+        if (thisLevel.length === 0) {
+            if (nextLevel.length !== 0) {
+                thisLevel = nextLevel;
+                nextLevel = [];
+                result.push(thisLevel.map(node => node.val));
+            }
+        }
+    }
+    return result;
+};
+```
+
+## My Weakness /Bugs
+
+1. [Weakness-1] Can’t figure out how to store level information in BFS.
+
+This problem is intuitive with DFS. However, some people will start with BFS. Sometimes the interviewer might ask for a BFS solution. Then some people are stuck at not being able to figure out how to identify the level of a node because it’s hard to pass that information around in BFS.
+
+2. [Weakness-2] Can’t figure out...
+
+3. [Bug-1] Forget to push node into queue while expanding the nodes
+
+4. [Bug-2] Mistake when ...
+
+## My Similar Problems
+
+LeetCode 103: https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal
+LeetCode 107: https://leetcode.com/problems/binary-tree-level-order-traversal-ii/
